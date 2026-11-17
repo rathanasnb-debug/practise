@@ -98,6 +98,32 @@
       isolation: isolate
     }
 
+    #space-background {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      transition: opacity .8s ease
+    }
+
+    .space-active #space-background {
+      opacity: .72
+    }
+
+    [data-theme=light] #space-background {
+      opacity: 0
+    }
+
+    [data-theme=light].space-active #space-background {
+      opacity: .18;
+      mix-blend-mode: multiply
+    }
+
     .falling-stars {
       position: fixed;
       z-index: 0;
@@ -688,7 +714,7 @@
       padding: .55rem .6rem .55rem 1.1rem;
       border-radius: 999px;
       border: 1px solid transparent;
-      transition: transform .5s var(--ease), background .4s, border-color .4s, backdrop-filter .4s
+      transition: translate .5s var(--ease), opacity .3s ease, background .4s, border-color .4s, backdrop-filter .4s
     }
 
     nav.solid {
@@ -700,7 +726,9 @@
     }
 
     nav.hide {
-      transform: translateY(-140%)
+      translate: -50% -150%;
+      opacity: 0 !important;
+      pointer-events: none
     }
 
     .logo {
@@ -1379,6 +1407,118 @@
       will-change: transform
     }
 
+    #name {
+      position: relative;
+      isolation: isolate;
+      perspective: 700px
+    }
+
+    #name::before,
+    #name::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none
+    }
+
+    #name::before {
+      z-index: -1;
+      inset: -.2em -.12em;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 48% 68%, rgba(255, 84, 16, .3), rgba(188, 38, 13, .12) 36%, transparent 72%);
+      filter: blur(18px);
+      opacity: .58;
+      animation: name-fire-aura 2.6s ease-in-out infinite alternate
+    }
+
+    #name::after {
+      z-index: 2;
+      background-image:
+        radial-gradient(circle, #fff2bd 0 1px, transparent 1.7px),
+        radial-gradient(circle, #ffae37 0 1.2px, transparent 2px),
+        radial-gradient(circle, #ff5420 0 .8px, transparent 1.6px),
+        radial-gradient(circle, #ffd178 0 1px, transparent 1.8px),
+        radial-gradient(circle, #ff7b28 0 1.1px, transparent 2px);
+      background-position: 8% 90%, 32% 82%, 57% 96%, 77% 86%, 95% 98%;
+      background-repeat: no-repeat;
+      opacity: .7;
+      animation: name-embers 2.8s ease-out infinite
+    }
+
+    #name .ch {
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 1px rgba(255, 197, 119, .72);
+      background-image:
+        repeating-linear-gradient(0deg, transparent 0 13%, rgba(255, 232, 150, .82) 15%, rgba(255, 114, 28, .62) 20%, transparent 28%, transparent 34%),
+        radial-gradient(ellipse at 50% 105%, #fff4bf 0%, #ffbc37 18%, #f34b16 40%, rgba(139, 25, 16, .25) 64%, transparent 74%),
+        linear-gradient(180deg, #f8fdff 0%, #d7e5ef 16%, #455363 29%, #171a24 43%, #ffca62 55%, #fa5a1b 74%, #57202a 100%);
+      background-size: 100% 220%, 100% 185%, 100% 100%;
+      background-position: 50% 120%, 50% 110%, 50% 50%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      background-blend-mode: screen, screen, normal;
+      filter: drop-shadow(1px 1px 0 rgba(137, 40, 20, .92)) drop-shadow(2px 3px 0 rgba(53, 18, 19, .8)) drop-shadow(0 0 9px rgba(255, 98, 25, .48));
+      transform-style: preserve-3d;
+      animation: name-fire-rise 1.75s linear infinite, name-fire-glow 1.9s ease-in-out infinite alternate;
+      animation-delay: var(--fire-delay), var(--fire-delay);
+      transition: filter .35s ease
+    }
+
+    #name:hover .ch {
+      filter: brightness(1.22) drop-shadow(1px 1px 0 rgba(174, 48, 16, .95)) drop-shadow(2px 3px 0 rgba(53, 18, 19, .8)) drop-shadow(0 0 15px rgba(255, 121, 30, .8));
+      animation-duration: 1.05s, .9s
+    }
+
+    @keyframes name-fire-rise {
+      from {
+        background-position: 50% 120%, 50% 110%, 50% 50%
+      }
+
+      to {
+        background-position: 50% -110%, 50% -100%, 50% 50%
+      }
+    }
+
+    @keyframes name-fire-glow {
+      from {
+        text-shadow: 0 0 5px rgba(255, 193, 72, .24)
+      }
+
+      to {
+        text-shadow: 0 0 10px rgba(255, 192, 74, .55), 0 0 18px rgba(255, 74, 20, .24)
+      }
+    }
+
+    @keyframes name-fire-aura {
+      from {
+        opacity: .38;
+        transform: scale(.96)
+      }
+
+      to {
+        opacity: .72;
+        transform: scale(1.04)
+      }
+    }
+
+    @keyframes name-embers {
+      0% {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      18%,
+      62% {
+        opacity: .72
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-25px)
+      }
+    }
+
     .kh {
       font: 500 clamp(1.2rem, 2vw, 2rem) 'Noto Sans Khmer', sans-serif;
       color: var(--mu);
@@ -2003,34 +2143,6 @@
       margin-inline: auto
     }
 
-    .certificate-scene {
-      position: absolute;
-      z-index: -1;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: .42;
-      mix-blend-mode: screen;
-      pointer-events: none
-    }
-
-    [data-theme=light] .certificate-scene {
-      opacity: .42
-    }
-
-    @media(max-width:900px) {
-      .certificate-scene {
-        opacity: .22
-      }
-    }
-
-    @media(max-width:600px) {
-      .certificate-scene {
-        opacity: .18
-      }
-    }
-
     .cert {
       padding: 1.3rem;
       border-style: dashed;
@@ -2056,10 +2168,10 @@
     #contact {
       background:
         linear-gradient(
-          color-mix(in srgb, var(--bg) 72%, transparent),
-          color-mix(in srgb, var(--bg) 82%, transparent)
+          color-mix(in srgb, var(--bg) 52%, transparent),
+          color-mix(in srgb, var(--bg) 68%, transparent)
         ),
-        url("./image/contact-background.gif") center / cover no-repeat
+        radial-gradient(ellipse at 82% 35%, color-mix(in srgb, var(--c) 12%, transparent), transparent 62%)
     }
 
     form {
@@ -2573,6 +2685,7 @@
 </head>
 
 <body>
+  <canvas id="space-background" aria-hidden="true"></canvas>
   <div id="launch-intro" role="dialog" aria-modal="true" aria-label="Rocket launch portfolio introduction">
     <div class="launch-intro__sky" aria-hidden="true"></div>
     <canvas id="launch-fx" aria-hidden="true"></canvas>
@@ -2847,7 +2960,6 @@
     </section>
 
     <section id="certificates">
-      <img class="certificate-scene" src="./image/animated_neon_tech_lab.gif" alt="" aria-hidden="true">
       <div class="wrap">
         <div class="eyebrow rv">Certificates</div>
         <h2 class="rv">Certificates &amp; courses.</h2>
@@ -2985,6 +3097,7 @@
     const nav = $("#nav"), burger = $("#burger");
     function setMenuOpen(open) {
       nav.classList.toggle("open", open);
+      if (open) nav.classList.remove("hide");
       burger.setAttribute("aria-expanded", String(open));
       burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     }
@@ -2999,8 +3112,21 @@
         burger.focus();
       }
     });
-    let lastY = 0, tick = false;
-    addEventListener("scroll", () => { if (tick) return; tick = true; requestAnimationFrame(() => { const y = scrollY, h = document.documentElement.scrollHeight - innerHeight; $("#bar").style.transform = `scaleX(${h > 0 ? y / h : 0})`; nav.classList.toggle("solid", y > 40); nav.classList.toggle("hide", y > lastY && y > 400 && !nav.classList.contains("open")); $("#top").classList.toggle("on", y > 800); lastY = y; tick = false }) }, { passive: true });
+    let lastY = scrollY, tick = false;
+    addEventListener("scroll", () => {
+      if (tick) return;
+      tick = true;
+      requestAnimationFrame(() => {
+        const y = scrollY, h = document.documentElement.scrollHeight - innerHeight;
+        $("#bar").style.transform = `scaleX(${h > 0 ? y / h : 0})`;
+        nav.classList.toggle("solid", y > 40);
+        if (nav.classList.contains("open") || y < lastY || y === 0) nav.classList.remove("hide");
+        else if (y > lastY) nav.classList.add("hide");
+        $("#top").classList.toggle("on", y > 800);
+        lastY = y;
+        tick = false;
+      });
+    }, { passive: true });
     $("#top").onclick = () => scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" });
     const secIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) $$("#links a").forEach(a => { const on = a.hash === "#" + e.target.id; a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current") }) }), { rootMargin: "-45% 0px -50% 0px" });
     $$("main section").forEach(s => secIO.observe(s));
@@ -3012,7 +3138,11 @@
 
     /* ===== cinematic first-visit intro ===== */
     const lines = $$("#name .ln");
-    lines.forEach(l => { const t = l.textContent; l.innerHTML = [...t].map(c => `<span class="ch">${c}</span>`).join("") });
+    let nameLetterIndex = 0;
+    lines.forEach(l => {
+      const t = l.textContent;
+      l.innerHTML = [...t].map(c => `<span class="ch" style="--fire-delay:${nameLetterIndex++ * 45}ms">${c}</span>`).join("");
+    });
     const roles = ["IT Student", "Frontend Developer", "Creative Coder", "UI/UX Learner"]; let ri = 0;
     const launchIntro = $("#launch-intro");
     let introActive = root.classList.contains("intro-active"), homeRevealed = false, introTimer = 0, introFrame = 0, introRenderer = null, introKeydown = null, introTimeline = null;
@@ -3032,7 +3162,7 @@
           .fromTo("#nav", { y: -18, opacity: 0 }, { y: 0, opacity: 1, duration: .8 })
           .from(".badge", { y: 20, opacity: 0, duration: .8 }, "-=.45")
           .from(".hi", { y: 16, opacity: 0, duration: .7 }, "-=.55")
-          .from("#name .ch", { yPercent: 110, rotate: 6, duration: 1.1, stagger: .025 }, "-=.5")
+          .from("#name .ch", { yPercent: 110, scale: .72, rotateX: -75, opacity: 0, transformOrigin: "50% 100%", duration: .76, stagger: .055, ease: "back.out(1.25)" }, "-=.5")
           .from([".kh", ".role", ".hero>p:not(.hi):not(.kh)", ".cta .btn", ".hero-profile"], { y: 24, opacity: 0, duration: .8, stagger: .07 }, "-=.7")
           .from(".tag", { scale: .6, opacity: 0, duration: .9, stagger: .08 }, "-=.8")
           .from("#butterfly-flock", { scale: .35, opacity: 0, duration: 1, ease: "back.out(1.7)" }, "-=.7");
@@ -3594,6 +3724,358 @@
       }
       document.addEventListener("visibilitychange", () => { if (!document.hidden && vis) loop() });
       loop();
+    })();
+
+    /* ===== section-only space background ===== */
+    (function () {
+      const canvas = $("#space-background");
+      if (!canvas || !window.THREE) return;
+
+      let renderer;
+      try {
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: "low-power" });
+      } catch (error) {
+        console.error("Unable to initialize the section space background.", error);
+        return;
+      }
+
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 600 ? 1 : 1.35));
+      renderer.setClearColor(0x000000, 0);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(48, 1, .1, 50);
+      camera.position.z = 10;
+
+      const nebulaTextureCanvas = document.createElement("canvas");
+      nebulaTextureCanvas.width = nebulaTextureCanvas.height = 128;
+      const nebulaContext = nebulaTextureCanvas.getContext("2d");
+      const nebulaGradient = nebulaContext.createRadialGradient(64, 64, 5, 64, 64, 64);
+      nebulaGradient.addColorStop(0, "rgba(91, 83, 255, .42)");
+      nebulaGradient.addColorStop(.45, "rgba(99, 67, 220, .16)");
+      nebulaGradient.addColorStop(1, "rgba(74, 91, 255, 0)");
+      nebulaContext.fillStyle = nebulaGradient;
+      nebulaContext.fillRect(0, 0, 128, 128);
+      const nebulaTexture = new THREE.CanvasTexture(nebulaTextureCanvas);
+      const nebulaMaterial = new THREE.SpriteMaterial({
+        map: nebulaTexture,
+        color: 0xaaaaff,
+        transparent: true,
+        opacity: .2,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+      const nebulae = [];
+      [[-4.1, 2.4, 5.2, 2.6], [3.8, 2.2, 4.4, 2.8], [-1.4, -2.7, 5.8, 2.6]].forEach(([x, y, width, height], index) => {
+        const cloud = new THREE.Sprite(nebulaMaterial.clone());
+        cloud.position.set(x, y, -3 - index);
+        cloud.scale.set(width, height, 1);
+        scene.add(cloud);
+        nebulae.push(cloud);
+      });
+
+      const starCount = innerWidth < 600 ? 240 : 520;
+      const starPositions = new Float32Array(starCount * 3);
+      const starColors = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount; i++) {
+        starPositions.set([
+          (Math.random() - .5) * Math.max(5, innerWidth / innerHeight * 9.3),
+          (Math.random() - .5) * 9.3,
+          -7 + Math.random() * 6
+        ], i * 3);
+        const tint = Math.random();
+        starColors.set([.68 + tint * .32, .78 + tint * .22, 1], i * 3);
+      }
+      const starsGeometry = new THREE.BufferGeometry();
+      starsGeometry.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
+      starsGeometry.setAttribute("color", new THREE.BufferAttribute(starColors, 3));
+      const starsMaterial = new THREE.PointsMaterial({
+        size: innerWidth < 600 ? .035 : .04,
+        vertexColors: true,
+        transparent: true,
+        opacity: .82,
+        sizeAttenuation: true,
+        depthWrite: false
+      });
+      const stars = new THREE.Points(starsGeometry, starsMaterial);
+      scene.add(stars);
+
+      const twinkleGeometry = new THREE.BufferGeometry();
+      const twinklePositions = new Float32Array(24 * 3);
+      for (let i = 0; i < 24; i++) {
+        twinklePositions.set([
+          (Math.random() - .5) * Math.max(5, innerWidth / innerHeight * 9.3),
+          (Math.random() - .5) * 8.5,
+          -1 + Math.random() * 2
+        ], i * 3);
+      }
+      twinkleGeometry.setAttribute("position", new THREE.BufferAttribute(twinklePositions, 3));
+      const twinkles = new THREE.Points(twinkleGeometry, new THREE.PointsMaterial({
+        color: 0xc5eaff,
+        size: .09,
+        transparent: true,
+        opacity: .7,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      }));
+      scene.add(twinkles);
+
+      const shootingStar = new THREE.Group();
+      shootingStar.visible = false;
+      const meteorMaterial = new THREE.MeshBasicMaterial({ color: 0xb9e8ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
+      const meteorHead = new THREE.Mesh(new THREE.SphereGeometry(.045, 8, 8), meteorMaterial);
+      const meteorTailGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(-1.1, .65, 0),
+        new THREE.Vector3(0, 0, 0)
+      ]);
+      const meteorTail = new THREE.Line(meteorTailGeometry, new THREE.LineBasicMaterial({
+        color: 0x80baff,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending
+      }));
+      shootingStar.add(meteorTail, meteorHead);
+      scene.add(shootingStar);
+
+      const rocket = new THREE.Group();
+      const rocketBodyMaterial = new THREE.MeshStandardMaterial({ color: 0xd7e9f4, metalness: .48, roughness: .28, transparent: true, opacity: .82, emissive: 0x174568, emissiveIntensity: .35 });
+      const rocketAccentMaterial = new THREE.MeshStandardMaterial({ color: 0x7d5cff, metalness: .35, roughness: .3, transparent: true, opacity: .82, emissive: 0x5425d5, emissiveIntensity: .55 });
+      const rocketBody = new THREE.Mesh(new THREE.CylinderGeometry(.13, .16, .86, 16), rocketBodyMaterial);
+      rocket.add(rocketBody);
+      const rocketNose = new THREE.Mesh(new THREE.ConeGeometry(.13, .3, 16), rocketAccentMaterial);
+      rocketNose.position.y = .58;
+      rocket.add(rocketNose);
+      const rocketWindow = new THREE.Mesh(new THREE.SphereGeometry(.075, 12, 10), new THREE.MeshBasicMaterial({ color: 0x72e7ff, transparent: true, opacity: .9 }));
+      rocketWindow.position.set(0, .15, .12);
+      rocket.add(rocketWindow);
+      [-1, 1].forEach(side => {
+        const fin = new THREE.Mesh(new THREE.BoxGeometry(.09, .27, .08), rocketAccentMaterial);
+        fin.position.set(side * .17, -.29, 0);
+        fin.rotation.z = side * -.28;
+        rocket.add(fin);
+      });
+      const flame = new THREE.Mesh(new THREE.ConeGeometry(.09, .42, 12), new THREE.MeshBasicMaterial({
+        color: 0x43d8ff,
+        transparent: true,
+        opacity: .8,
+        blending: THREE.AdditiveBlending
+      }));
+      flame.position.y = -.63;
+      flame.rotation.z = Math.PI;
+      rocket.add(flame);
+      const trailPositions = new Float32Array(18 * 3);
+      for (let i = 0; i < 18; i++) {
+        trailPositions.set([
+          (Math.random() - .5) * .2,
+          -.72 - Math.random() * .65,
+          (Math.random() - .5) * .16
+        ], i * 3);
+      }
+      const trailGeometry = new THREE.BufferGeometry();
+      trailGeometry.setAttribute("position", new THREE.BufferAttribute(trailPositions, 3));
+      const trailMaterial = new THREE.PointsMaterial({
+        color: 0x78deff,
+        size: .035,
+        transparent: true,
+        opacity: .58,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+      rocket.add(new THREE.Points(trailGeometry, trailMaterial));
+      rocket.scale.setScalar(.85);
+      rocket.position.set(-4, 1.5, .4);
+      scene.add(rocket);
+
+      const student = new THREE.Group();
+      const suitMaterial = new THREE.MeshStandardMaterial({ color: 0xbed9f3, metalness: .35, roughness: .4, transparent: true, opacity: .48, emissive: 0x103860, emissiveIntensity: .45 });
+      const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x55dfff, metalness: .3, roughness: .3, transparent: true, opacity: .7, emissive: 0x087ca0, emissiveIntensity: .8 });
+      const visorMaterial = new THREE.MeshBasicMaterial({ color: 0x173b6d, transparent: true, opacity: .8 });
+      const makePart = (geometry, material, position, parent) => {
+        const part = new THREE.Mesh(geometry, material);
+        part.position.set(...position);
+        (parent || student).add(part);
+        return part;
+      };
+
+      const asteroid = makePart(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({
+        color: 0x263967, metalness: .3, roughness: .8, transparent: true, opacity: .5, emissive: 0x151d59, emissiveIntensity: .5
+      }), [0, -.92, 0]);
+      asteroid.scale.set(1.25, .48, .8);
+      const torso = makePart(new THREE.CylinderGeometry(.23, .29, .62, 14), suitMaterial, [-.1, -.13, .1]);
+      torso.rotation.z = -.16;
+      const helmet = makePart(new THREE.SphereGeometry(.3, 18, 14), suitMaterial, [-.1, .39, .1]);
+      makePart(new THREE.SphereGeometry(.21, 14, 12), visorMaterial, [-.1, .4, .31]);
+      makePart(new THREE.TorusGeometry(.3, .025, 6, 24), trimMaterial, [-.1, .39, .1]).rotation.x = Math.PI / 2;
+      const thigh = makePart(new THREE.CylinderGeometry(.14, .12, .5, 10), suitMaterial, [.22, -.48, .1]);
+      thigh.rotation.z = Math.PI / 2.5;
+      const shin = makePart(new THREE.CylinderGeometry(.11, .13, .42, 10), suitMaterial, [.48, -.7, .1]);
+      shin.rotation.z = -.5;
+      makePart(new THREE.SphereGeometry(.14, 10, 8), trimMaterial, [.66, -.86, .12]).scale.set(1.4, .55, .8);
+      const arm = makePart(new THREE.CylinderGeometry(.09, .075, .52, 10), suitMaterial, [.3, -.12, .15]);
+      arm.rotation.z = -1.05;
+      makePart(new THREE.SphereGeometry(.09, 10, 8), trimMaterial, [.52, -.33, .18]);
+      const laptopBase = makePart(new THREE.BoxGeometry(.62, .035, .4), trimMaterial, [.48, -.39, .35]);
+      laptopBase.rotation.z = -.13;
+      const laptopScreen = makePart(new THREE.BoxGeometry(.58, .4, .035), visorMaterial, [.45, -.17, .39]);
+      laptopScreen.rotation.z = -.13;
+      const screenGlow = makePart(new THREE.BoxGeometry(.48, .28, .012), new THREE.MeshBasicMaterial({ color: 0x43d8ff, transparent: true, opacity: .42 }), [.45, -.17, .416]);
+      screenGlow.rotation.z = -.13;
+      for (let i = 0; i < 4; i++) {
+        const codeLine = makePart(new THREE.BoxGeometry(.23 + (i % 2) * .1, .012, .008), new THREE.MeshBasicMaterial({
+          color: i % 2 ? 0xbca3ff : 0x86efff,
+          transparent: true,
+          opacity: .78
+        }), [.39 + (i % 2) * .035, -.08 - i * .055, .426]);
+        codeLine.rotation.z = -.13;
+      }
+      student.position.set(3.1, -1.5, -1.6);
+      student.scale.setScalar(.88);
+      student.rotation.y = -.12;
+      scene.add(student);
+
+      const codeCanvas = document.createElement("canvas");
+      codeCanvas.width = 256;
+      codeCanvas.height = 80;
+      const codeContext = codeCanvas.getContext("2d");
+      codeContext.fillStyle = "rgba(13, 30, 66, .64)";
+      codeContext.fillRect(0, 0, 256, 80);
+      codeContext.strokeStyle = "rgba(86, 211, 255, .55)";
+      codeContext.strokeRect(1, 1, 254, 78);
+      codeContext.font = "600 21px monospace";
+      codeContext.fillStyle = "#83eaff";
+      codeContext.fillText("</>  JS · CSS · Py", 14, 48);
+      const codeTexture = new THREE.CanvasTexture(codeCanvas);
+      const codePanel = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: codeTexture,
+        transparent: true,
+        opacity: .38,
+        depthWrite: false
+      }));
+      codePanel.position.set(3.1, -.18, -1.25);
+      codePanel.scale.set(1.48, .46, 1);
+      scene.add(codePanel);
+
+      scene.add(new THREE.AmbientLight(0x91baff, .7));
+      const blueLight = new THREE.PointLight(0x39cfff, 18, 10);
+      blueLight.position.set(3.3, -.8, 2);
+      scene.add(blueLight);
+      const violetLight = new THREE.PointLight(0x7655ff, 15, 11);
+      violetLight.position.set(-3.5, 1.6, -1);
+      scene.add(violetLight);
+
+      let width = 0, height = 0, active = false, running = false, elapsed = 0, studentBaseY = -1.5;
+      const targetIds = ["about", "skills", "journey", "projects", "certificates", "contact"];
+      const intersectingTargets = new Set();
+      const motionQuery = matchMedia("(prefers-reduced-motion: reduce)");
+
+      function render() {
+        renderer.render(scene, camera);
+      }
+
+      function resize() {
+        width = innerWidth;
+        height = innerHeight;
+        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, width < 600 ? 1 : 1.35));
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        const compact = width < 700;
+        studentBaseY = compact ? -2.15 : -1.5;
+        student.position.set(compact ? 1.5 : Math.min(width / height * 2.3, 4.6), studentBaseY, -1.6);
+        student.scale.setScalar(compact ? .56 : .88);
+        codePanel.position.set(student.position.x, student.position.y + 1.3, -1.25);
+        codePanel.scale.set(compact ? 1.05 : 1.48, compact ? .33 : .46, 1);
+        nebulae.forEach((cloud, index) => cloud.position.x = [-.27, .25, -.08][index] * width / height * 9.3);
+        if (motionQuery.matches || !active) render();
+      }
+
+      function updateActivity() {
+        const home = $("#home").getBoundingClientRect();
+        const homeVisible = home.bottom > 0 && home.top < innerHeight;
+        const nextActive = !homeVisible && intersectingTargets.size > 0;
+        if (nextActive === active) return;
+        active = nextActive;
+        document.documentElement.classList.toggle("space-active", active);
+        if (active && !motionQuery.matches) animate(performance.now());
+        else render();
+      }
+
+      function animate(now) {
+        if (running || !active || motionQuery.matches || document.hidden) return;
+        running = true;
+        const frame = timestamp => {
+          if (!active || motionQuery.matches || document.hidden) {
+            running = false;
+            return;
+          }
+          elapsed = (timestamp - now) / 1000;
+          stars.rotation.z = Math.sin(elapsed * .035) * .012;
+          twinkles.material.opacity = .5 + Math.sin(elapsed * 2.1) * .38;
+          nebulae.forEach((cloud, index) => {
+            cloud.material.opacity = .15 + (Math.sin(elapsed * .24 + index * 1.8) + 1) * .08;
+            cloud.position.y = [2.4, 2.2, -2.7][index] + Math.sin(elapsed * .14 + index) * .08;
+          });
+          student.position.y = studentBaseY + Math.sin(elapsed * .7) * .1;
+          arm.rotation.z = -1.05 + Math.sin(elapsed * 3.5) * .14;
+          flame.scale.setScalar(.75 + (Math.sin(elapsed * 13) + 1) * .13);
+
+          const phase = (elapsed / 16) % 1;
+          const horizontalFlight = phase < .62;
+          const progress = horizontalFlight ? phase / .62 : (phase - .62) / .38;
+          const span = Math.max(3, width / height * 4.2);
+          if (horizontalFlight) {
+            rocket.position.set(-span * 1.2 + progress * span * 2.4, 1.55 + Math.sin(progress * Math.PI * 2) * .62, .4);
+            rocket.rotation.z = -Math.PI / 2 + Math.sin(progress * Math.PI) * .12;
+          } else {
+            rocket.position.set(-span * .45 + Math.sin(progress * Math.PI * 2) * .7, -5.3 + progress * 10.6, .4);
+            rocket.rotation.z = Math.sin(progress * Math.PI) * .12;
+          }
+          const edge = Math.min(progress * 5, (1 - progress) * 5, 1);
+          const visibility = Math.max(0, Math.min(1, edge));
+          rocket.visible = visibility > .015;
+          rocketBodyMaterial.opacity = .82 * visibility;
+          rocketAccentMaterial.opacity = .82 * visibility;
+          flame.material.opacity = .8 * visibility;
+          trailMaterial.opacity = .58 * visibility;
+
+          const meteorPhase = elapsed % 5.5;
+          const meteorVisible = meteorPhase < 1.1;
+          const meteorFade = meteorVisible ? Math.min(meteorPhase * 2.5, (1.1 - meteorPhase) * 2.5, 1) : 0;
+          shootingStar.visible = meteorVisible;
+          shootingStar.position.set(5 - meteorPhase * 8, 4.1 - meteorPhase * 5.4, 1);
+          meteorMaterial.opacity = Math.max(0, meteorFade);
+          meteorTail.material.opacity = Math.max(0, meteorFade * .75);
+
+          render();
+          requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      }
+
+      const targetObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) intersectingTargets.add(entry.target.id);
+          else intersectingTargets.delete(entry.target.id);
+        });
+        updateActivity();
+      });
+      targetIds.forEach(id => targetObserver.observe(document.getElementById(id)));
+      const homeObserver = new IntersectionObserver(updateActivity);
+      homeObserver.observe($("#home"));
+      new ResizeObserver(resize).observe(document.body);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          running = false;
+          return;
+        }
+        if (active && !motionQuery.matches) animate(performance.now());
+      });
+      motionQuery.addEventListener("change", () => {
+        if (motionQuery.matches) {
+          running = false;
+          render();
+        } else if (active) animate(performance.now());
+      });
+      resize();
     })();
   </script>
 </body>
