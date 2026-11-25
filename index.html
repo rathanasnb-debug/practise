@@ -81,6 +81,10 @@
       scroll-padding-top: 90px
     }
 
+    html.nav-scrolling {
+      scroll-behavior: auto !important
+    }
+
     html,
     body {
       overflow-x: clip
@@ -1332,26 +1336,101 @@
     }
 
     .hero>.hero-profile {
+      --image-x: 50%;
+      --image-y: 50%;
       grid-column: 2;
       grid-row: 1 / span 8;
       justify-self: end;
+      position: relative;
       width: min(100%, 340px);
       padding: 1rem;
       border-radius: 30px;
       background: linear-gradient(180deg, rgba(23, 38, 67, .86), rgba(10, 16, 31, .82));
       border: 1px solid rgba(111, 176, 255, .3);
       box-shadow: 0 24px 60px rgba(3, 10, 26, .46), 0 0 0 1px rgba(0, 180, 219, .18), inset 0 1px rgba(255, 255, 255, .08);
-      backdrop-filter: blur(10px)
+      backdrop-filter: blur(10px);
+      isolation: isolate;
+      transform-style: preserve-3d;
+      animation: profile-float 7s ease-in-out infinite
+    }
+
+    .hero>.hero-profile::before,
+    .hero>.hero-profile::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      pointer-events: none
+    }
+
+    .hero>.hero-profile::before {
+      z-index: 0;
+      padding: 1px;
+      background: conic-gradient(from 0deg, transparent 0 68%, var(--c) 78%, var(--p) 87%, transparent 96%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      opacity: .5;
+      animation: profile-ring-spin 8s linear infinite
+    }
+
+    .hero>.hero-profile::after {
+      z-index: 2;
+      inset: 1px;
+      background: radial-gradient(ellipse at var(--image-x) var(--image-y), rgba(255, 255, 255, .26), transparent 38%), linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, .12) 48%, transparent 66%);
+      opacity: 0;
+      transition: opacity .4s ease
+    }
+
+    .hero>.hero-profile:hover::before,
+    .hero>.hero-profile:focus-within::before {
+      opacity: .95
+    }
+
+    .hero>.hero-profile:hover::after,
+    .hero>.hero-profile:focus-within::after {
+      opacity: .75
     }
 
     .hero>.hero-profile img {
+      position: relative;
+      z-index: 1;
       display: block;
       width: 100%;
       height: auto;
       object-fit: cover;
       border-radius: 22px;
       background: rgba(10, 17, 30, .94);
-      box-shadow: 0 18px 30px rgba(0, 0, 0, .18)
+      box-shadow: 0 18px 30px rgba(0, 0, 0, .18);
+      transform: perspective(900px) rotateX(var(--image-tilt-y, 0deg)) rotateY(var(--image-tilt-x, 0deg)) scale(var(--image-scale, 1));
+      transform-style: preserve-3d;
+      transition: transform .6s var(--ease), filter .6s ease;
+      filter: saturate(.98) blur(.4px);
+      will-change: transform
+    }
+
+    .hero>.hero-profile:hover img,
+    .hero>.hero-profile:focus-within img {
+      --image-scale: 1.045;
+      filter: saturate(1.12) contrast(1.04) blur(0)
+    }
+
+    @keyframes profile-float {
+      0%,
+      100% {
+        translate: 0 0
+      }
+
+      50% {
+        translate: 0 -5px
+      }
+    }
+
+    @keyframes profile-ring-spin {
+      to {
+        transform: rotate(360deg)
+      }
     }
 
     .badge {
@@ -1425,7 +1504,7 @@
       z-index: -1;
       inset: -.2em -.12em;
       border-radius: 50%;
-      background: radial-gradient(ellipse at 48% 68%, rgba(255, 84, 16, .3), rgba(188, 38, 13, .12) 36%, transparent 72%);
+      background: radial-gradient(ellipse at 48% 68%, rgba(37, 99, 235, .3), rgba(29, 78, 216, .12) 36%, transparent 72%);
       filter: blur(18px);
       opacity: .58;
       animation: name-fire-aura 2.6s ease-in-out infinite alternate
@@ -1434,11 +1513,11 @@
     #name::after {
       z-index: 2;
       background-image:
-        radial-gradient(circle, #fff2bd 0 1px, transparent 1.7px),
-        radial-gradient(circle, #ffae37 0 1.2px, transparent 2px),
-        radial-gradient(circle, #ff5420 0 .8px, transparent 1.6px),
-        radial-gradient(circle, #ffd178 0 1px, transparent 1.8px),
-        radial-gradient(circle, #ff7b28 0 1.1px, transparent 2px);
+        radial-gradient(circle, #dbeafe 0 1px, transparent 1.7px),
+        radial-gradient(circle, #60a5fa 0 1.2px, transparent 2px),
+        radial-gradient(circle, #2563eb 0 .8px, transparent 1.6px),
+        radial-gradient(circle, #93c5fd 0 1px, transparent 1.8px),
+        radial-gradient(circle, #3b82f6 0 1.1px, transparent 2px);
       background-position: 8% 90%, 32% 82%, 57% 96%, 77% 86%, 95% 98%;
       background-repeat: no-repeat;
       opacity: .7;
@@ -1448,17 +1527,17 @@
     #name .ch {
       color: transparent;
       -webkit-text-fill-color: transparent;
-      -webkit-text-stroke: 1px rgba(255, 197, 119, .72);
+      -webkit-text-stroke: 1px rgba(147, 197, 253, .72);
       background-image:
-        repeating-linear-gradient(0deg, transparent 0 13%, rgba(255, 232, 150, .82) 15%, rgba(255, 114, 28, .62) 20%, transparent 28%, transparent 34%),
-        radial-gradient(ellipse at 50% 105%, #fff4bf 0%, #ffbc37 18%, #f34b16 40%, rgba(139, 25, 16, .25) 64%, transparent 74%),
-        linear-gradient(180deg, #f8fdff 0%, #d7e5ef 16%, #455363 29%, #171a24 43%, #ffca62 55%, #fa5a1b 74%, #57202a 100%);
+        repeating-linear-gradient(0deg, transparent 0 13%, rgba(191, 219, 254, .82) 15%, rgba(37, 99, 235, .62) 20%, transparent 28%, transparent 34%),
+        radial-gradient(ellipse at 50% 105%, #dbeafe 0%, #60a5fa 18%, #2563eb 40%, rgba(30, 64, 175, .25) 64%, transparent 74%),
+        linear-gradient(180deg, #f8fdff 0%, #dbeafe 16%, #93c5fd 29%, #172554 43%, #60a5fa 55%, #2563eb 74%, #1e3a8a 100%);
       background-size: 100% 220%, 100% 185%, 100% 100%;
       background-position: 50% 120%, 50% 110%, 50% 50%;
       background-clip: text;
       -webkit-background-clip: text;
       background-blend-mode: screen, screen, normal;
-      filter: drop-shadow(1px 1px 0 rgba(137, 40, 20, .92)) drop-shadow(2px 3px 0 rgba(53, 18, 19, .8)) drop-shadow(0 0 9px rgba(255, 98, 25, .48));
+      filter: drop-shadow(1px 1px 0 rgba(30, 64, 175, .92)) drop-shadow(2px 3px 0 rgba(23, 37, 84, .8)) drop-shadow(0 0 9px rgba(37, 99, 235, .48));
       transform-style: preserve-3d;
       animation: name-fire-rise 1.75s linear infinite, name-fire-glow 1.9s ease-in-out infinite alternate;
       animation-delay: var(--fire-delay), var(--fire-delay);
@@ -1466,7 +1545,7 @@
     }
 
     #name:hover .ch {
-      filter: brightness(1.22) drop-shadow(1px 1px 0 rgba(174, 48, 16, .95)) drop-shadow(2px 3px 0 rgba(53, 18, 19, .8)) drop-shadow(0 0 15px rgba(255, 121, 30, .8));
+      filter: brightness(1.22) drop-shadow(1px 1px 0 rgba(37, 99, 235, .95)) drop-shadow(2px 3px 0 rgba(23, 37, 84, .8)) drop-shadow(0 0 15px rgba(96, 165, 250, .8));
       animation-duration: 1.05s, .9s
     }
 
@@ -1482,11 +1561,11 @@
 
     @keyframes name-fire-glow {
       from {
-        text-shadow: 0 0 5px rgba(255, 193, 72, .24)
+        text-shadow: 0 0 5px rgba(147, 197, 253, .24)
       }
 
       to {
-        text-shadow: 0 0 10px rgba(255, 192, 74, .55), 0 0 18px rgba(255, 74, 20, .24)
+        text-shadow: 0 0 10px rgba(96, 165, 250, .55), 0 0 18px rgba(37, 99, 235, .24)
       }
     }
 
@@ -1622,6 +1701,8 @@
     }
 
     .photo {
+      --image-x: 50%;
+      --image-y: 50%;
       position: relative;
       aspect-ratio: 4/5;
       display: grid;
@@ -1629,7 +1710,12 @@
       border-radius: 28px;
       overflow: hidden;
       background: linear-gradient(180deg, rgba(23, 38, 67, .9), rgba(10, 16, 31, .82));
-      box-shadow: 0 20px 45px rgba(3, 10, 26, .38), inset 0 1px rgba(255, 255, 255, .08)
+      box-shadow: 0 20px 45px rgba(3, 10, 26, .38), inset 0 1px rgba(255, 255, 255, .08);
+      transition: box-shadow .6s ease
+    }
+
+    .photo:hover {
+      box-shadow: 0 25px 55px rgba(3, 10, 26, .48), 0 0 30px color-mix(in srgb, var(--c) 28%, transparent), inset 0 1px rgba(255, 255, 255, .08)
     }
 
     .photo img {
@@ -1638,12 +1724,37 @@
       object-fit: cover;
       object-position: center top;
       display: block;
-      filter: saturate(1.1) contrast(1.06)
+      filter: saturate(1.02) contrast(1.02) blur(.5px);
+      transform: perspective(1000px) rotateX(var(--image-tilt-y, 0deg)) rotateY(var(--image-tilt-x, 0deg)) scale(var(--image-scale, 1));
+      transform-style: preserve-3d;
+      transition: transform .7s var(--ease), filter .7s ease;
+      will-change: transform
+    }
+
+    .photo:hover img {
+      --image-scale: 1.07;
+      filter: saturate(1.18) contrast(1.08) blur(0)
+    }
+
+    .photo::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: radial-gradient(ellipse at var(--image-x) var(--image-y), rgba(255, 255, 255, .22), transparent 38%), linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, .1) 48%, transparent 66%);
+      opacity: 0;
+      transition: opacity .4s ease;
+      pointer-events: none
+    }
+
+    .photo:hover::before {
+      opacity: .8
     }
 
     .photo::after {
       content: "";
       position: absolute;
+      z-index: 2;
       inset: 0;
       background: linear-gradient(180deg, transparent 55%, rgba(3, 7, 18, .18));
       pointer-events: none
@@ -1907,7 +2018,9 @@
       display: flex;
       flex-direction: column;
       transition: transform .6s var(--ease), border-color .3s, box-shadow .6s ease;
-      transform-style: preserve-3d
+      transform: perspective(1100px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg);
+      transform-style: preserve-3d;
+      backface-visibility: hidden
     }
 
     .pj:hover {
@@ -1915,12 +2028,27 @@
       box-shadow: inset 0 1px 0 var(--hi), 0 35px 80px -36px color-mix(in srgb, var(--c) 58%, transparent)
     }
 
+    .pj:focus-visible {
+      border-color: var(--c);
+      box-shadow: inset 0 1px 0 var(--hi), 0 0 0 1px color-mix(in srgb, var(--c) 48%, transparent), 0 28px 70px -34px color-mix(in srgb, var(--c) 54%, transparent)
+    }
+
     .pv {
+      --image-x: 50%;
+      --image-y: 50%;
       aspect-ratio: 16/10;
       display: grid;
       place-items: center;
       overflow: hidden;
-      position: relative
+      position: relative;
+      perspective: 900px;
+      isolation: isolate;
+      transition: box-shadow .5s ease
+    }
+
+    .pj:hover .pv,
+    .pj:focus-visible .pv {
+      box-shadow: inset 0 0 0 1px var(--c), 0 0 28px color-mix(in srgb, var(--c) 24%, transparent)
     }
 
     .pv.has-image {
@@ -1932,14 +2060,25 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover
+      object-fit: cover;
+      transform: rotateX(var(--image-tilt-y, 0deg)) rotateY(var(--image-tilt-x, 0deg)) scale(var(--image-scale, 1));
+      transition: transform .8s var(--ease), filter .8s ease;
+      filter: saturate(.98) blur(.5px);
+      will-change: transform
     }
 
-    .pv.has-image span {
+    .pj:hover .pv img,
+    .pj:focus-visible .pv img,
+    .mb .pv:hover img {
+      --image-scale: 1.09;
+      filter: saturate(1.12) contrast(1.04) blur(0)
+    }
+
+    .pv.has-image > .pv-index {
       display: none
     }
 
-    .pv span {
+    .pv-index {
       font: 700 4.5rem Sora;
       opacity: .9;
       color: #fff;
@@ -1947,16 +2086,81 @@
       mix-blend-mode: overlay
     }
 
-    .pj:hover .pv span {
+    .pj:hover .pv-index {
       transform: scale(1.18)
+    }
+
+    .pv::before {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      background: radial-gradient(ellipse at var(--image-x) var(--image-y), rgba(255, 255, 255, .2), transparent 38%), linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, .1) 48%, transparent 66%);
+      opacity: 0;
+      transition: opacity .4s ease;
+      pointer-events: none
+    }
+
+    .pj:hover .pv::before,
+    .pj:focus-visible .pv::before,
+    .mb .pv:hover::before {
+      opacity: .85
     }
 
     .pv::after {
       content: "";
       position: absolute;
+      z-index: 1;
       inset: 0;
       background: linear-gradient(transparent 40%, var(--bg2));
       opacity: .7
+    }
+
+    .pv-action {
+      position: absolute;
+      z-index: 3;
+      left: 1rem;
+      bottom: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .55rem .8rem;
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 999px;
+      background: rgba(3, 7, 18, .56);
+      color: #fff;
+      font: 600 .7rem Sora, sans-serif;
+      letter-spacing: .02em;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .24), inset 0 1px rgba(255, 255, 255, .12);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      transform: translate3d(0, 8px, 0);
+      transition: opacity .35s ease, transform .45s var(--ease);
+      pointer-events: none
+    }
+
+    .pv-action-arrow {
+      font-size: .9rem;
+      transition: transform .35s var(--ease)
+    }
+
+    .pj:hover .pv-action,
+    .pj:focus-visible .pv-action {
+      opacity: 1;
+      transform: translate3d(0, 0, 0)
+    }
+
+    .pj:hover .pv-action-arrow,
+    .pj:focus-visible .pv-action-arrow {
+      transform: translate3d(2px, -2px, 0)
+    }
+
+    @media (hover: none) {
+      .pv-action {
+        opacity: 1;
+        transform: none
+      }
     }
 
     .pb {
@@ -2115,7 +2319,7 @@
 
     .certs {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 280px));
+      grid-template-columns: minmax(min(280px, 100%), 820px);
       justify-content: center;
       gap: 1.1rem;
       width: 100%
@@ -2144,9 +2348,87 @@
     }
 
     .cert {
+      width: 100%;
       padding: 1.3rem;
       border-style: dashed;
       text-align: center
+    }
+
+    .cert-gallery {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, .8fr);
+      align-items: stretch;
+      gap: .8rem;
+      margin-bottom: 1.1rem
+    }
+
+    .cert-image {
+      position: relative;
+      display: block;
+      overflow: hidden;
+      aspect-ratio: 1.47;
+      border: 1px solid var(--bd);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .24);
+      transition: border-color .3s ease, box-shadow .3s ease
+    }
+
+    .cert-image--portrait {
+      aspect-ratio: 2 / 3
+    }
+
+    .cert-image img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform .5s var(--ease)
+    }
+
+    .cert-image--portrait img {
+      object-fit: cover
+    }
+
+    .cert-image:hover,
+    .cert-image:focus-visible {
+      border-color: var(--c);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, .3), 0 0 24px color-mix(in srgb, var(--c) 24%, transparent)
+    }
+
+    .cert-image:hover img,
+    .cert-image:focus-visible img {
+      transform: scale(1.025)
+    }
+
+    .cert-image-label {
+      position: absolute;
+      right: .65rem;
+      bottom: .65rem;
+      padding: .35rem .6rem;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 999px;
+      background: rgba(3, 7, 18, .72);
+      color: #fff;
+      font: 500 .68rem Inter, sans-serif;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .25s ease, transform .25s ease
+    }
+
+    .cert-image:hover .cert-image-label,
+    .cert-image:focus-visible .cert-image-label {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    @media (hover: none) {
+      .cert-image-label {
+        opacity: 1;
+        transform: none
+      }
     }
 
     .cert h3 {
@@ -2155,7 +2437,56 @@
     }
 
     .cert-meta {
-      color: #000
+      color: var(--mu)
+    }
+
+    #certificate-viewer {
+      position: fixed;
+      inset: 0;
+      width: auto;
+      max-width: none;
+      height: 100vh;
+      height: 100dvh;
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior: contain;
+      border: 0;
+      border-radius: 0;
+      color: var(--tx);
+      background: var(--bg)
+    }
+
+    #certificate-viewer[open] {
+      display: grid;
+      place-items: center
+    }
+
+    #certificate-viewer::backdrop {
+      background: rgba(3, 7, 18, .82);
+      backdrop-filter: blur(8px)
+    }
+
+    #certificate-viewer-back {
+      position: fixed;
+      z-index: 1;
+      top: max(.75rem, env(safe-area-inset-top));
+      left: max(.75rem, env(safe-area-inset-left));
+      min-height: 40px;
+      padding: .5rem .8rem;
+      font-size: .78rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4)
+    }
+
+    #certificate-viewer-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      border-radius: 0;
+      background: var(--bg);
+      object-fit: contain
     }
 
     /* contact */
@@ -2563,6 +2894,15 @@
         padding: 1.2rem
       }
 
+      .cert-gallery {
+        grid-template-columns: 1fr
+      }
+
+      .cert-image--portrait {
+        width: min(100%, 260px);
+        justify-self: center
+      }
+
       .tl {
         padding-left: 1.8rem
       }
@@ -2841,8 +3181,7 @@
             aria-hidden="true">SOVANRATHANA</span></h1>
         <p class="kh" lang="km">ផាន់ សុវណ្ណរតនា</p>
         <div class="role" id="role" aria-live="off">IT Student</div>
-        <p>I'm a first-year IT student at Passerelles Numériques Cambodia, passionate about programming, frontend
-          development, UI/UX design, and building modern digital experiences.</p>
+        <p>I'm a second year IT student at Passerelles Numériques Cambodia.</p>
         <div class="cta">
           <a class="btn pri" href="#projects" data-mag>Explore my work</a>
           <a class="btn" href="#contact" data-mag>Let's connect</a>
@@ -3012,6 +3351,11 @@
     <div class="mb glass" id="mb"></div>
   </div>
 
+  <dialog id="certificate-viewer" aria-label="Certificate image preview">
+    <button class="btn pri" id="certificate-viewer-back" type="button">← Back to certificates</button>
+    <img id="certificate-viewer-image" alt="">
+  </dialog>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -3033,7 +3377,7 @@
       { t: "PNC Student Club Website", n: "01", g: "135deg,#2563eb,#00b4db", image: "./image/student%20club.png", d: "A modern website designed to connect students with clubs, activities, events, and the student community at Passerelles Numériques Cambodia.", tech: ["HTML", "CSS", "JavaScript", "Tailwind CSS"], a: ["Live Demo", ""], b: ["GitHub", ""], c: "Designing a layout that stays clear on phones and desktops.", l: "Responsive design and structuring a multi-page site." },
       { t: "Smart Presentation Controller", n: "02", g: "135deg,#7c3aed,#2563eb", image: "./image/control-slide.png", d: "A computer vision project that uses hand gestures to control presentations without touching a keyboard or mouse.", tech: ["Python", "OpenCV", "Computer Vision", "Hand Gesture Recognition"], a: ["View Project", ""], b: ["GitHub", ""], c: "Making gesture detection reliable in different lighting.", l: "How computer vision reads video frames and landmarks." },
       { t: "Personal Photo Memory Website", n: "03", g: "135deg,#ff5400,#7c3aed", image: "./image/web-photo.png", d: "A modern personal photo memory platform for organizing, viewing, and preserving important photos and memories.", tech: ["HTML", "CSS", "JavaScript"], a: ["Live Demo", ""], b: ["GitHub", ""], c: "Presenting many photos without slowing the page down.", l: "Image layout, lazy loading and clean interface design." }];
-    const CERTS = [{ t: "Your first certificate", o: "Organization", dt: "Date", u: "" }]; // replace with real certificates
+    const CERTS = [{ t: "Introduction to Modern AI", o: "Cisco Networking Academy", dt: "25 Nov 2026", image: "./image/introduction-to-modern-ai-certificate.png", photo: "./image/sovanrathana-with-certificate.png" }];
 
     /* ===== helpers ===== */
     const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -3079,13 +3423,27 @@
     });
     setLink($("#s-email"), CONFIG.emailLink, "Email"); setLink($("#s-github"), CONFIG.github); setLink($("#s-linkedin"), CONFIG.linkedin); setLink($("#s-telegram"), CONFIG.telegram);
     const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-    const projectPreview = p => `<div class="pv${p.image ? " has-image" : ""}" style="background:linear-gradient(${p.g})">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.t)} screenshot" loading="lazy">` : ""}<span aria-hidden="true">${p.n}</span></div>`;
+    const projectPreview = p => `<div class="pv${p.image ? " has-image" : ""}" style="background:linear-gradient(${p.g})">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.t)} screenshot" loading="lazy">` : ""}<span class="pv-index" aria-hidden="true">${p.n}</span><span class="pv-action" aria-hidden="true">View project <span class="pv-action-arrow">↗</span></span></div>`;
 
     /* ===== render ===== */
     $("#skillGrid").innerHTML = SKILLS.map((s, i) => `<article class="glass sk rv" style="--d:${(i % 3) * .08}s" data-cursor="CLICK"><div class="m" aria-hidden="true">${s.m}</div><h3>${esc(s.n)}<em>${s.lvl}</em></h3><p>${esc(s.d)}</p><div class="bar" role="progressbar" aria-valuenow="${s.p}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(s.n)} progress"><i style="--w:${s.p}%"></i></div><span class="pc" data-n="${s.p}" data-s="%">0%</span></article>`).join("");
     const projectCards = PROJECTS.map((p, i) => `<article class="glass pj" tabindex="0" role="button" aria-label="Open project: ${esc(p.t)}" data-i="${i}" data-cursor="VIEW">${projectPreview(p)}<div class="pb"><h3>${esc(p.t)}</h3><p>${esc(p.d)}</p><div class="techs">${p.tech.map(t => `<i>${esc(t)}</i>`).join("")}</div><span class="go">Details <span aria-hidden="true">→</span></span></div></article>`).join("");
     $("#carousel-track").innerHTML = `<div class="carousel-group" aria-hidden="false">${projectCards}</div><div class="carousel-group" aria-hidden="true">${projectCards.replace(/tabindex="0" role="button"/g, 'tabindex="-1"')}</div>`;
-    $("#certs").innerHTML = CERTS.map(c => `<article class="glass cert rv"><h3>${esc(c.t)}</h3><p class="cert-meta">${esc(c.o)} · ${esc(c.dt)}</p><p style="margin-top:.8rem"><a class="soc-link" ${c.u ? `href="${c.u}" target="_blank" rel="noopener"` : 'aria-disabled="true"'} style="color:var(--c);font-weight:600">View certificate</a></p></article>`).join("");
+    $("#certs").innerHTML = CERTS.map(c => `<article class="glass cert rv"><div class="cert-gallery">${c.image ? `<a class="cert-image" href="${esc(c.image)}" data-certificate-preview aria-label="Preview the ${esc(c.t)} certificate"><img src="${esc(c.image)}" alt="${esc(c.t)} certificate" loading="lazy"><span class="cert-image-label">View certificate ↗</span></a>` : ""}${c.photo ? `<a class="cert-image cert-image--portrait" href="${esc(c.photo)}" data-certificate-preview aria-label="Preview photo of Sovanrathana holding the ${esc(c.t)} certificate"><img src="${esc(c.photo)}" alt="Sovanrathana Phann holding the ${esc(c.t)} certificate" loading="lazy"><span class="cert-image-label">View photo ↗</span></a>` : ""}</div><h3>${esc(c.t)}</h3><p class="cert-meta">${esc(c.o)} · ${esc(c.dt)}</p></article>`).join("");
+    const certificateViewer = $("#certificate-viewer"), certificateViewerImage = $("#certificate-viewer-image");
+    let certificateBodyOverflow = "";
+    $("#certs").addEventListener("click", e => {
+      const link = e.target.closest("[data-certificate-preview]");
+      if (!link) return;
+      e.preventDefault();
+      certificateViewerImage.src = link.href;
+      certificateViewerImage.alt = $("img", link).alt;
+      certificateBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      certificateViewer.showModal();
+    });
+    $("#certificate-viewer-back").addEventListener("click", () => certificateViewer.close());
+    certificateViewer.addEventListener("close", () => { document.body.style.overflow = certificateBodyOverflow });
 
     /* ===== theme ===== */
     const root = document.documentElement, tbtn = $("#theme");
@@ -3102,7 +3460,49 @@
       burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     }
     burger.onclick = () => setMenuOpen(!nav.classList.contains("open"));
-    $$("#links a").forEach(a => a.addEventListener("click", () => setMenuOpen(false)));
+    let navScrollFrame = 0;
+    function stopNavigationScroll() {
+      if (navScrollFrame) cancelAnimationFrame(navScrollFrame);
+      navScrollFrame = 0;
+      document.documentElement.classList.remove("nav-scrolling");
+    }
+    function scrollToNavigationTarget(target) {
+      stopNavigationScroll();
+      const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      const start = scrollY;
+      const destination = Math.max(0, target.getBoundingClientRect().top + start - padding);
+      const distance = destination - start;
+      if (RM || Math.abs(distance) < 1) {
+        scrollTo({ top: destination, behavior: "auto" });
+        return;
+      }
+      const duration = Math.min(1400, Math.max(650, Math.abs(distance) / 1.6));
+      let began;
+      document.documentElement.classList.add("nav-scrolling");
+      function frame(now) {
+        if (began === undefined) began = now;
+        const progress = Math.min((now - began) / duration, 1);
+        scrollTo(0, start + distance * (1 - Math.pow(1 - progress, 3)));
+        if (progress < 1) navScrollFrame = requestAnimationFrame(frame);
+        else stopNavigationScroll();
+      }
+      navScrollFrame = requestAnimationFrame(frame);
+    }
+    addEventListener("wheel", stopNavigationScroll, { passive: true });
+    addEventListener("touchstart", stopNavigationScroll, { passive: true });
+    addEventListener("pointerdown", stopNavigationScroll, { passive: true });
+    addEventListener("keydown", e => {
+      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(e.key)) stopNavigationScroll();
+    });
+    $$("#links a").forEach(a => a.addEventListener("click", e => {
+      setMenuOpen(false);
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !a.hash) return;
+      const target = document.getElementById(a.hash.slice(1));
+      if (!target) return;
+      e.preventDefault();
+      history.pushState(null, "", a.hash);
+      scrollToNavigationTarget(target);
+    }));
     document.addEventListener("click", e => {
       if (nav.classList.contains("open") && !nav.contains(e.target)) setMenuOpen(false);
     });
@@ -3629,7 +4029,38 @@
       (function f() { rx += (x - rx) * .16; ry += (y - ry) * .16; ring.style.transform = `translate(${rx}px,${ry}px)`; requestAnimationFrame(f) })();
       document.addEventListener("pointerover", e => { const t = e.target.closest("[data-cursor],a,button,input,textarea"); ring.classList.toggle("big", !!(t && t.dataset.cursor === "VIEW")); ring.classList.toggle("sm", !!t && t.dataset.cursor !== "VIEW"); ring.textContent = t && t.dataset.cursor || "" });
       $$("[data-mag]").forEach(b => { b.addEventListener("pointermove", e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .22}px,${(e.clientY - r.top - r.height / 2) * .3}px)` }); b.addEventListener("pointerleave", () => b.style.transform = "") });
-      $$(".pj").forEach(c => { c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5; c.style.transition = "transform .1s"; c.style.transform = `translateY(-8px) rotateX(${-py * 7}deg) rotateY(${px * 9}deg)` }); c.addEventListener("pointerleave", () => { c.style.transition = ""; c.style.transform = "" }) });
+      document.addEventListener("pointermove", e => {
+        const frame = e.target.closest && e.target.closest(".hero-profile, .photo, .pv");
+        if (!frame) return;
+        const image = frame.querySelector("img");
+        if (!image) return;
+        const rect = frame.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        frame.style.setProperty("--image-x", `${x * 100}%`);
+        frame.style.setProperty("--image-y", `${y * 100}%`);
+        image.style.setProperty("--image-tilt-x", `${(x - .5) * 5}deg`);
+        image.style.setProperty("--image-tilt-y", `${(.5 - y) * 5}deg`);
+      }, { passive: true });
+      document.addEventListener("pointerout", e => {
+        const frame = e.target.closest && e.target.closest(".hero-profile, .photo, .pv");
+        if (!frame || frame.contains(e.relatedTarget)) return;
+        const image = frame.querySelector("img");
+        frame.style.removeProperty("--image-x");
+        frame.style.removeProperty("--image-y");
+        if (image) {
+          image.style.removeProperty("--image-tilt-x");
+          image.style.removeProperty("--image-tilt-y");
+        }
+      });
+      $$(".pj").forEach(c => {
+        c.addEventListener("pointermove", e => {
+          const r = c.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+          c.style.transition = "transform .12s ease-out";
+          c.style.transform = `perspective(1100px) translate3d(0,-8px,14px) rotateX(${-py * 8}deg) rotateY(${px * 10}deg)`;
+        });
+        c.addEventListener("pointerleave", () => { c.style.transition = ""; c.style.transform = "" });
+      });
     }
 
     /* ===== project modal ===== */
